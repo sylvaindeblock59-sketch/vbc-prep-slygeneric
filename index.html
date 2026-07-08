@@ -347,7 +347,7 @@ input[type=range]{width:100%;accent-color:var(--pri);margin:5px 0 10px;height:24
       <div class="hdr-title">VBC Bailleul</div>
       <div class="hdr-sub">Entraîneur Volley · Prépa physique &amp; Renforcement</div>
     </div>
-    <div class="hdr-pill">Été 2026</div>
+    <div class="hdr-pill">Été 2026 · v2</div>
   </div>
 </div>
 
@@ -453,8 +453,8 @@ input[type=range]{width:100%;accent-color:var(--pri);margin:5px 0 10px;height:24
     <span class="label">Mon équipe</span>
     <select id="p-eq" onchange="peuplerSelectNom(this.value);saveProfil()">
       <option value="">— Choisir mon équipe —</option>
-      <option value="f">♀ Équipe féminine N2 → charges adaptées N2F</option>
-      <option value="m">♂ Équipe masculine N3 → charges adaptées N3M</option>
+      <option value="f" id="opt-eqf">♀ Équipe féminine → charges féminines</option>
+      <option value="m" id="opt-eqm">♂ Équipe masculine → charges masculines</option>
     </select>
 
     <span class="label">Mon poste</span>
@@ -737,7 +737,7 @@ input[type=range]{width:100%;accent-color:var(--pri);margin:5px 0 10px;height:24
     <!-- Liste joueuses -->
     <div class="card">
       <div class="card-title"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>Gérer les équipes</div>
-      <div class="sec" style="margin-top:0">Equipe féminine N2</div>
+      <div class="sec" style="margin-top:0" id="sec-eqf">Équipe féminine</div>
       <div id="c-fem"></div>
       <div class="sec">Equipe masculine N3</div>
       <div id="c-masc"></div>
@@ -799,6 +799,10 @@ input[type=range]{width:100%;accent-color:var(--pri);margin:5px 0 10px;height:24
       <input type="text" id="club-saison" placeholder="Ex : 2026/27" style="margin-bottom:8px" oninput="sauverConfig()">
       <span class="label">Nom du coach</span>
       <input type="text" id="club-coach" placeholder="Ex : Sylvain Deblock" style="margin-bottom:8px" oninput="sauverConfig()">
+      <span class="label">Équipe féminine — nom &amp; niveau</span>
+      <input type="text" id="club-eqf" placeholder="Ex : Féminine N2" style="margin-bottom:8px" oninput="sauverConfig()">
+      <span class="label">Équipe masculine — nom &amp; niveau</span>
+      <input type="text" id="club-eqm" placeholder="Ex : Masculine N3" style="margin-bottom:8px" oninput="sauverConfig()">
       <button class="btn btn-grn" onclick="appliquerConfig()" style="margin-bottom:0">Appliquer la configuration &#10003;</button>
     </div>
     <!-- Actions -->
@@ -866,7 +870,15 @@ const SEMAINES_BIENTOT = [9,10,11,12]; // Semaines visibles en \"bientôt dispon
 // --- CONFIG SUPABASE ---
 const SB_URL='https://arajyyfqrpjxpwuqzsxw.supabase.co';
 const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFyYWp5eWZxcnBqeHB3dXF6c3h3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAzMzc2NTksImV4cCI6MjA5NTkxMzY1OX0.xK_Z_IZfsq8tOyRwYQiGFTpi6rapJXbwIDTqcsh-Juo';
+const TABLES_CLUB=['vbc_seances','vbc_players','vbc_charges'];
+function clubId(){
+  const n=(S.clubNom||'').trim().toLowerCase()
+    .normalize('NFD').replace(/[\u0300-\u036f]/g,'')
+    .replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'');
+  return n||'demo';
+}
 async function sbInsert(table,data){
+  if(TABLES_CLUB.includes(table)&&data&&!data.club)data.club=clubId();
   try{
     const r=await fetch(SB_URL+'/rest/v1/'+table,{method:'POST',headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json','Prefer':'return=minimal'},body:JSON.stringify(data)});
     if(r.ok){return true;}
@@ -907,6 +919,7 @@ async function viderFileAttente(){
   }catch(e){}
 }
 async function sbSelect(table,params){
+  if(TABLES_CLUB.includes(table))params=(params?params+'&':'')+'club=eq.'+encodeURIComponent(clubId());
   try{const q=params?'?'+params:'';const r=await fetch(SB_URL+'/rest/v1/'+table+q,{headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY}});if(r.ok)return await r.json();return[];}catch(e){return[];}
 }
 
@@ -1648,7 +1661,7 @@ window.addEventListener('online',()=>{document.getElementById('off-bar').classLi
 // \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550
 loadS();
 viderFileAttente();
-restoreConfig();
+restoreConfig();majLabelsEquipes();
 restoreProfil();
 peuplerSelectNom(S.eq||'f');
 restoreRM();
@@ -2182,11 +2195,30 @@ function sauverConfig(){
   if(nom)S.clubNom=nom.value;
   if(saison)S.clubSaison=saison.value;
   if(coach)S.clubCoach=coach.value;
+  const eqf=document.getElementById('club-eqf');
+  const eqm=document.getElementById('club-eqm');
+  if(eqf)S.eqFNom=eqf.value;
+  if(eqm)S.eqMNom=eqm.value;
   saveS();
+}
+function eqNom(t){return t==='f'?(S.eqFNom||'Féminine N2'):(S.eqMNom||'Masculine N3');}
+function majLabelsEquipes(){
+  const map={'fs-f':'\u2640 ','fs-m':'\u2642 ','fc-f':'\u2640 ','fc-m':'\u2642 ','eq-f':'\u2640 ','eq-m':'\u2642 '};
+  Object.keys(map).forEach(id=>{
+    const el=document.getElementById(id);
+    if(el)el.textContent=map[id]+eqNom(id.endsWith('f')?'f':'m');
+  });
+  const of_=document.getElementById('opt-eqf'),om=document.getElementById('opt-eqm');
+  if(of_)of_.textContent='\u2640 '+eqNom('f')+' \u2192 charges f\u00e9minines';
+  if(om)om.textContent='\u2642 '+eqNom('m')+' \u2192 charges masculines';
+  const eqfi=document.getElementById('club-eqf'),eqmi=document.getElementById('club-eqm');
+  if(eqfi&&S.eqFNom)eqfi.value=S.eqFNom;
+  if(eqmi&&S.eqMNom)eqmi.value=S.eqMNom;
 }
 
 function appliquerConfig(){
   sauverConfig();
+  majLabelsEquipes();
   // Mettre à jour le header
   const t=document.querySelector('.hdr-title');
   const s=document.querySelector('.hdr-sub');

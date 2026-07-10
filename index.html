@@ -265,6 +265,10 @@ input[type=range]{width:100%;accent-color:var(--pri);margin:5px 0 10px;height:24
 .player-row{display:flex;align-items:center;gap:8px;padding:11px 0;border-bottom:1px solid var(--bdr)}
 .player-row:last-child{border-bottom:none}
 .avatar{border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:12px;flex-shrink:0;letter-spacing:-.2px}
+.chg-box{margin-top:8px;background:var(--bg);border:1px dashed var(--bdr);border-radius:8px;padding:8px 10px}
+.chg-prev{font-size:11px;color:var(--txt2);margin-bottom:5px}
+.chg-lbl{font-size:10px;font-weight:700;color:var(--txt2);text-transform:uppercase;letter-spacing:.05em;display:block;margin-bottom:3px}
+.chg-inp{width:110px;padding:9px 10px;border:1.5px solid var(--bdr);border-radius:8px;font-size:16px;font-weight:700;background:var(--card)}
 .pin-dot{width:14px;height:14px;border-radius:50%;background:var(--bdr);transition:background .15s,transform .15s;display:inline-block}
 .pin-dot.on{background:var(--pri);transform:scale(1.15)}
 .pin-key{padding:15px 10px;font-size:22px;font-weight:800;border-radius:var(--rsm);border:1.5px solid var(--bdr);background:var(--card);color:var(--txt);cursor:pointer;transition:all .15s;width:100%;box-shadow:var(--sh)}
@@ -329,6 +333,8 @@ input[type=range]{width:100%;accent-color:var(--pri);margin:5px 0 10px;height:24
       <input type="text" id="sg-club" placeholder="Ex : VBC Bailleul" style="width:100%;padding:12px;border-radius:10px;border:none;font-size:15px;margin-bottom:14px">
       <label style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;opacity:.8;display:block;margin-bottom:5px">Nom de l'entra&#238;neur *</label>
       <input type="text" id="sg-coach" placeholder="Ex : Sylvain Deblock" style="width:100%;padding:12px;border-radius:10px;border:none;font-size:15px;margin-bottom:14px">
+      <label style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;opacity:.8;display:block;margin-bottom:5px">Ton code coach — 4 chiffres *</label>
+      <input type="tel" inputmode="numeric" maxlength="4" id="sg-pin" placeholder="Ex : 2580 (garde-le secret !)" style="width:100%;padding:12px;border-radius:10px;border:none;font-size:15px;margin-bottom:14px;letter-spacing:3px">
       <label style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;opacity:.8;display:block;margin-bottom:5px">Saison *</label>
       <input type="text" id="sg-saison" placeholder="Ex : 2026/27" style="width:100%;padding:12px;border-radius:10px;border:none;font-size:15px;margin-bottom:18px">
       <label style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;opacity:.8;display:block;margin-bottom:8px">Ton groupe *</label>
@@ -378,7 +384,7 @@ input[type=range]{width:100%;accent-color:var(--pri);margin:5px 0 10px;height:24
       <div class="hdr-title">VBC Bailleul</div>
       <div class="hdr-sub">Entraîneur Volley · Prépa physique &amp; Renforcement</div>
     </div>
-    <div class="hdr-pill">Été 2026 · v3</div>
+    <div class="hdr-pill">Été 2026 · v4</div>
   </div>
 </div>
 
@@ -689,7 +695,7 @@ input[type=range]{width:100%;accent-color:var(--pri);margin:5px 0 10px;height:24
     <div class="card" style="text-align:center;padding:28px 20px">
       <div style="font-size:36px;margin-bottom:10px">&#128202;</div>
       <div style="font-size:16px;font-weight:700;margin-bottom:5px">Statistiques</div>
-      <div style="font-size:13px;color:var(--txt2);margin-bottom:20px">Réservées au coach — PIN 1723</div>
+      <div style="font-size:13px;color:var(--txt2);margin-bottom:20px">Réservées au coach</div>
       <div id="sp-dots" style="display:flex;justify-content:center;gap:14px;margin-bottom:20px">
         <div class="pin-dot"></div><div class="pin-dot"></div><div class="pin-dot"></div><div class="pin-dot"></div>
       </div>
@@ -830,6 +836,8 @@ input[type=range]{width:100%;accent-color:var(--pri);margin:5px 0 10px;height:24
       <input type="text" id="club-saison" placeholder="Ex : 2026/27" style="margin-bottom:8px" oninput="sauverConfig()">
       <span class="label">Nom du coach</span>
       <input type="text" id="club-coach" placeholder="Ex : Sylvain Deblock" style="margin-bottom:8px" oninput="sauverConfig()">
+      <span class="label">Code coach (4 chiffres)</span>
+      <input type="tel" inputmode="numeric" maxlength="4" id="club-pin" placeholder="Code d'accès Coach &amp; Stats" style="margin-bottom:8px" oninput="sauverConfig()">
       <span class="label">Équipe féminine — nom &amp; niveau</span>
       <input type="text" id="club-eqf" placeholder="Ex : Féminine N2" style="margin-bottom:8px" oninput="sauverConfig()">
       <span class="label">Équipe masculine — nom &amp; niveau</span>
@@ -1304,6 +1312,49 @@ function restoreRM(){
 // \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550
 // CHARGE
 // \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550
+let _chgHist=null,_chgLoading=false;
+async function loadCharges(){
+  if(!S.nom||_chgLoading)return;
+  _chgLoading=true;
+  const rows=await sbSelect('vbc_charges','prenom=eq.'+encodeURIComponent(S.nom)+'&order=semaine.asc');
+  _chgHist={};
+  (rows||[]).forEach(r=>{
+    if(!r.exercice)return;
+    if(!_chgHist[r.exercice])_chgHist[r.exercice]=[];
+    _chgHist[r.exercice].push({s:r.semaine,c:r.charge});
+  });
+  _chgLoading=false;
+  if(S.prog==='A')renProgA();
+}
+function chargePrec(id,w){
+  S.charges=S.charges||{};
+  for(let i=w-1;i>=1;i--){const k='S'+i+'-'+id;if(S.charges[k])return S.charges[k];}
+  let best=null,bestS=-1;
+  if(_chgHist&&_chgHist[id])_chgHist[id].forEach(r=>{if(r.s<w&&r.s>bestS&&r.c!=null){best=r.c;bestS=r.s;}});
+  return best;
+}
+function setCharge(key,val){
+  S.charges=S.charges||{};
+  if(val===''||val==null)delete S.charges[key];
+  else S.charges[key]=val;
+  saveS();
+}
+function chargeHTML(e,w){
+  S.charges=S.charges||{};
+  const key='S'+w+'-'+e.id;
+  const v=S.charges[key]!=null?S.charges[key]:'';
+  const prev=chargePrec(e.id,w);
+  return `<div class="chg-box">
+    <div class="chg-prev">${prev!=null?('Derni\u00e8re fois : <strong>'+prev+' kg</strong>'):'Premi\u00e8re saisie \u2014 note ta charge !'}</div>
+    <label class="chg-lbl">Ma charge (kg)</label>
+    <input type="number" inputmode="decimal" step="0.5" min="0" class="chg-inp" value="${v}" onchange="setCharge('${key}',this.value)" placeholder="${prev!=null?prev:'kg'}">
+  </div>`;
+}
+function exoNomG(id){
+  const all=[].concat(SALLE_P1,SALLE_P2,EXT_P1,EXT_P2);
+  for(const e of all)if(e.id===id)return e.nom;
+  return id;
+}
 function getLoad(ex){
   const eq=S.eq||'f';
   if(ex.x&&S.rm[ex.x]){
@@ -1357,6 +1408,7 @@ function renSeance(){
 }
 
 function renProgA(){
+  if(_chgHist===null&&S.nom)loadCharges();
   // Semaine "bientôt disponible" (pas encore de contenu)
   if(S.week>MAX_SEMAINES){
     const w=S.week;
@@ -1394,6 +1446,7 @@ function renProgA(){
         <div class="ex-name">${nom}</div>
         ${e.note?`<div class="ex-note">${e.note}</div>`:''}
         <div class="ex-reps">${e.reps}</div>
+        ${(e.df||e.dm)?chargeHTML(e,w):''}
         <div class="ex-links">
           ${hasVid?`<a class="ex-vid" href="${e.vid}" target="_blank"><svg width="11" height="11" viewBox="0 0 24 24" fill="var(--inf)" stroke="none"><polygon points="5 3 19 12 5 21 5 3"/></svg>Voir la vidéo</a>`:''}
           ${hasAlt?`<button class="ex-alt${active?' active':''}" onclick="openAlt('${e.id}',${JSON.stringify(e.nom)},${JSON.stringify(e.alt)})">${active?'\u2726 Alternatif actif':'\u21C4 Remplacer'}</button>`:''}
@@ -1481,6 +1534,19 @@ function valider(prog){
       if(ok)toast('Envoy\u00e9 au coach \u2713');
       else toast('V\u00e9rifie ta connexion internet');
     });
+    if(prog==='A'&&S.charges){
+      const pref='S'+w+'-';
+      Object.keys(S.charges).forEach(k=>{
+        if(!k.startsWith(pref))return;
+        const val=parseFloat(S.charges[k]);
+        if(isNaN(val))return;
+        const exId=k.slice(pref.length);
+        const all=[].concat(SALLE_P1,SALLE_P2,EXT_P1,EXT_P2);
+        let presc='';
+        for(const e of all)if(e.id===exId){const L=getLoad(e);presc=S.eq==='m'?L.m:L.f;break;}
+        sbInsert('vbc_charges',{prenom:S.nom,equipe:S.eq,semaine:w,exercice:exId,charge:val,prescrit:String(presc||'')});
+      });
+    }
   }else{
     toast('Remplis ton profil pour que le coach te voie');
   }
@@ -1710,14 +1776,14 @@ document.getElementById('prog-B').style.display=S.prog==='B'?'':'none';
 // ===================================================
 // PIN COACH
 // ===================================================
-const PIN='1723';
+function getPIN(){return (S.pinCoach&&S.pinCoach.length===4)?S.pinCoach:'1723';}
 let cpBuf='',spBuf='';
 
 function cpKey(d){if(cpBuf.length>=4)return;cpBuf+=d;upCP();if(cpBuf.length===4)setTimeout(cpValidate,200);}
 function cpClear(){cpBuf=cpBuf.slice(0,-1);upCP();document.getElementById('cp-err').style.display='none';}
 function upCP(){document.querySelectorAll('#cp-dots .pin-dot').forEach((dot,i)=>dot.classList.toggle('on',i<cpBuf.length));}
 function cpValidate(){
-  if(cpBuf===PIN){
+  if(cpBuf===getPIN()){
     S.coachUnlocked=true;
     document.getElementById('coach-lock').style.display='none';
     document.getElementById('coach-dash').style.display='block';
@@ -1752,7 +1818,7 @@ function spKey(d){if(spBuf.length>=4)return;spBuf+=d;upSP();if(spBuf.length===4)
 function spClear(){spBuf=spBuf.slice(0,-1);upSP();document.getElementById('sp-err').style.display='none';}
 function upSP(){document.querySelectorAll('#sp-dots .pin-dot').forEach((dot,i)=>dot.classList.toggle('on',i<spBuf.length));}
 function spValidate(){
-  if(spBuf===PIN){
+  if(spBuf===getPIN()){
     S.statsUnlocked=true;
     document.getElementById('stats-lock').style.display='none';
     document.getElementById('stats-dash').style.display='block';
@@ -2227,6 +2293,8 @@ function sauverConfig(){
   if(nom)S.clubNom=nom.value;
   if(saison)S.clubSaison=saison.value;
   if(coach)S.clubCoach=coach.value;
+  const cpin=document.getElementById('club-pin');
+  if(cpin&&/^\d{4}$/.test(cpin.value.trim()))S.pinCoach=cpin.value.trim();
   const eqf=document.getElementById('club-eqf');
   const eqm=document.getElementById('club-eqm');
   if(eqf)S.eqFNom=eqf.value;
@@ -2259,9 +2327,11 @@ function validerSetup(){
   const eqf=document.getElementById('sg-eqf').value.trim();
   const eqm=document.getElementById('sg-eqm').value.trim();
   const err=document.getElementById('sg-err');
+  const pin=document.getElementById('sg-pin').value.trim();
   const okF=(_sgT==='f'||_sgT==='fm')?!!eqf:true;
   const okM=(_sgT==='m'||_sgT==='fm')?!!eqm:true;
-  if(!club||!coach||!saison||!_sgT||!okF||!okM){if(err)err.style.display='block';return;}
+  if(!club||!coach||!saison||!_sgT||!okF||!okM||!/^\d{4}$/.test(pin)){if(err)err.style.display='block';return;}
+  S.pinCoach=pin;
   S.clubNom=club;S.clubCoach=coach;S.clubSaison=saison;
   S.hasF=(_sgT==='f'||_sgT==='fm');
   S.hasM=(_sgT==='m'||_sgT==='fm');

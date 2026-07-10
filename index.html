@@ -320,6 +320,37 @@ input[type=range]{width:100%;accent-color:var(--pri);margin:5px 0 10px;height:24
 </style>
 </head>
 <body>
+<div id="setup-gate" style="display:none;position:fixed;inset:0;z-index:9999;background:var(--pri);overflow-y:auto;-webkit-overflow-scrolling:touch">
+  <div style="max-width:430px;margin:0 auto;padding:36px 22px 40px;color:#fff">
+    <div style="font-size:26px;font-weight:800;margin-bottom:4px">&#127952; SlyPrep</div>
+    <div style="opacity:.75;font-size:13px;margin-bottom:26px">Pr&#233;paration physique multiclub &#8212; configure ton club pour commencer</div>
+    <div style="background:rgba(255,255,255,.08);border-radius:14px;padding:18px">
+      <label style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;opacity:.8;display:block;margin-bottom:5px">Nom du club *</label>
+      <input type="text" id="sg-club" placeholder="Ex : VBC Bailleul" style="width:100%;padding:12px;border-radius:10px;border:none;font-size:15px;margin-bottom:14px">
+      <label style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;opacity:.8;display:block;margin-bottom:5px">Nom de l'entra&#238;neur *</label>
+      <input type="text" id="sg-coach" placeholder="Ex : Sylvain Deblock" style="width:100%;padding:12px;border-radius:10px;border:none;font-size:15px;margin-bottom:14px">
+      <label style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;opacity:.8;display:block;margin-bottom:5px">Saison *</label>
+      <input type="text" id="sg-saison" placeholder="Ex : 2026/27" style="width:100%;padding:12px;border-radius:10px;border:none;font-size:15px;margin-bottom:18px">
+      <label style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;opacity:.8;display:block;margin-bottom:8px">Ton groupe *</label>
+      <div style="display:flex;gap:8px;margin-bottom:14px">
+        <button type="button" class="sg-type" data-t="f" onclick="sgType('f')" style="flex:1;padding:11px 4px;border-radius:10px;border:2px solid rgba(255,255,255,.35);background:transparent;color:#fff;font-size:12px;font-weight:700;cursor:pointer">&#9792; F&#233;minine</button>
+        <button type="button" class="sg-type" data-t="m" onclick="sgType('m')" style="flex:1;padding:11px 4px;border-radius:10px;border:2px solid rgba(255,255,255,.35);background:transparent;color:#fff;font-size:12px;font-weight:700;cursor:pointer">&#9794; Masculine</button>
+        <button type="button" class="sg-type" data-t="fm" onclick="sgType('fm')" style="flex:1;padding:11px 4px;border-radius:10px;border:2px solid rgba(255,255,255,.35);background:transparent;color:#fff;font-size:12px;font-weight:700;cursor:pointer">Les deux</button>
+      </div>
+      <div id="sg-blocf" style="display:none">
+        <label style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;opacity:.8;display:block;margin-bottom:5px">&#201;quipe f&#233;minine &#8212; nom &amp; niveau *</label>
+        <input type="text" id="sg-eqf" placeholder="Ex : F&#233;minine N2" style="width:100%;padding:12px;border-radius:10px;border:none;font-size:15px;margin-bottom:14px">
+      </div>
+      <div id="sg-blocm" style="display:none">
+        <label style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;opacity:.8;display:block;margin-bottom:5px">&#201;quipe masculine &#8212; nom &amp; niveau *</label>
+        <input type="text" id="sg-eqm" placeholder="Ex : Masculine N3" style="width:100%;padding:12px;border-radius:10px;border:none;font-size:15px;margin-bottom:14px">
+      </div>
+      <div id="sg-err" style="display:none;color:#ffb3a7;font-size:12px;font-weight:700;margin-bottom:10px">Merci de remplir tous les champs marqu&#233;s *</div>
+      <button onclick="validerSetup()" style="width:100%;padding:14px;border-radius:10px;border:none;background:#e0533d;color:#fff;font-size:15px;font-weight:800;cursor:pointer;margin-top:4px">Valider et commencer &#10003;</button>
+    </div>
+    <div style="opacity:.55;font-size:11px;margin-top:14px;text-align:center">Ces r&#233;glages restent modifiables ensuite dans l'espace Coach &#8594; Configuration</div>
+  </div>
+</div>
 <div class="shell">
 
 <!-- ══ SIDEBAR PC ══ -->
@@ -347,7 +378,7 @@ input[type=range]{width:100%;accent-color:var(--pri);margin:5px 0 10px;height:24
       <div class="hdr-title">VBC Bailleul</div>
       <div class="hdr-sub">Entraîneur Volley · Prépa physique &amp; Renforcement</div>
     </div>
-    <div class="hdr-pill">Été 2026 · v2</div>
+    <div class="hdr-pill">Été 2026 · v3</div>
   </div>
 </div>
 
@@ -1661,7 +1692,8 @@ window.addEventListener('online',()=>{document.getElementById('off-bar').classLi
 // \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550
 loadS();
 viderFileAttente();
-restoreConfig();majLabelsEquipes();
+restoreConfig();majLabelsEquipes();appliquerEquipesVisibles();
+if(setupRequis())montrerSetup();
 restoreProfil();
 peuplerSelectNom(S.eq||'f');
 restoreRM();
@@ -2202,6 +2234,50 @@ function sauverConfig(){
   saveS();
 }
 function eqNom(t){return t==='f'?(S.eqFNom||'Féminine N2'):(S.eqMNom||'Masculine N3');}
+var _sgT=null;
+function sgType(t){
+  _sgT=t;
+  document.querySelectorAll('.sg-type').forEach(b=>{
+    const on=b.getAttribute('data-t')===t;
+    b.style.background=on?'#e0533d':'transparent';
+    b.style.borderColor=on?'#e0533d':'rgba(255,255,255,.35)';
+  });
+  document.getElementById('sg-blocf').style.display=(t==='f'||t==='fm')?'block':'none';
+  document.getElementById('sg-blocm').style.display=(t==='m'||t==='fm')?'block':'none';
+}
+function setupRequis(){
+  return !(S.clubNom&&S.clubCoach&&S.clubSaison&&(S.hasF||S.hasM));
+}
+function montrerSetup(){
+  const g=document.getElementById('setup-gate');
+  if(g)g.style.display='block';
+}
+function validerSetup(){
+  const club=document.getElementById('sg-club').value.trim();
+  const coach=document.getElementById('sg-coach').value.trim();
+  const saison=document.getElementById('sg-saison').value.trim();
+  const eqf=document.getElementById('sg-eqf').value.trim();
+  const eqm=document.getElementById('sg-eqm').value.trim();
+  const err=document.getElementById('sg-err');
+  const okF=(_sgT==='f'||_sgT==='fm')?!!eqf:true;
+  const okM=(_sgT==='m'||_sgT==='fm')?!!eqm:true;
+  if(!club||!coach||!saison||!_sgT||!okF||!okM){if(err)err.style.display='block';return;}
+  S.clubNom=club;S.clubCoach=coach;S.clubSaison=saison;
+  S.hasF=(_sgT==='f'||_sgT==='fm');
+  S.hasM=(_sgT==='m'||_sgT==='fm');
+  if(S.hasF)S.eqFNom=eqf;
+  if(S.hasM)S.eqMNom=eqm;
+  saveS();
+  document.getElementById('setup-gate').style.display='none';
+  restoreConfig();majLabelsEquipes();appliquerEquipesVisibles();
+  toast('Bienvenue, '+coach.split(' ')[0]+' ! Club configur\u00e9 \u2713');
+}
+function appliquerEquipesVisibles(){
+  const hasF=S.hasF!==false,hasM=S.hasM!==false;
+  const cache=(id,off)=>{const el=document.getElementById(id);if(el)el.style.display=off?'none':'';};
+  cache('opt-eqf',!hasF);cache('fs-f',!hasF);cache('fc-f',!hasF);cache('eq-f',!hasF);
+  cache('opt-eqm',!hasM);cache('fs-m',!hasM);cache('fc-m',!hasM);cache('eq-m',!hasM);
+}
 function majLabelsEquipes(){
   const map={'fs-f':'\u2640 ','fs-m':'\u2642 ','fc-f':'\u2640 ','fc-m':'\u2642 ','eq-f':'\u2640 ','eq-m':'\u2642 '};
   Object.keys(map).forEach(id=>{
@@ -2228,6 +2304,7 @@ function appliquerConfig(){
 }
 
 function restoreConfig(){
+  if(S.clubNom&&S.hasF===undefined&&S.hasM===undefined){S.hasF=true;S.hasM=true;}
   // Appliquer la config au chargement
   if(S.clubNom){
     const t=document.querySelector('.hdr-title');

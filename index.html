@@ -367,7 +367,7 @@ input[type=range]{width:100%;accent-color:var(--pri);margin:5px 0 10px;height:24
 <!-- ══ SIDEBAR PC ══ -->
 <aside class="pc-sidebar">
   <div class="pc-sb-logo">
-    <h2>VBC Bailleul</h2>
+    <h2>SlyPrep</h2>
     <p>Préparation physique 2026/27</p>
     <div class="pill">Sylvain Deblock</div>
   </div>
@@ -377,7 +377,7 @@ input[type=range]{width:100%;accent-color:var(--pri);margin:5px 0 10px;height:24
   <button class="pc-btn" onclick="go('seance')" id="pc-seance"><svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>Séance du jour</button>
   <button class="pc-btn" onclick="go('videos')" id="pc-videos"><svg viewBox="0 0 24 24"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>Vidéos</button>
   <button class="pc-btn" onclick="go('coach')" id="pc-coach"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>Vue coach</button>
-  <div class="pc-foot">VBC Bailleul<br>Sylvain Deblock<br>Saison 2026/27</div>
+  <div class="pc-foot" id="pc-foot">SlyPrep<br>Préparation physique multiclub</div>
 </aside>
 
 <!-- ══ MAIN ══ -->
@@ -386,10 +386,10 @@ input[type=range]{width:100%;accent-color:var(--pri);margin:5px 0 10px;height:24
 <div class="hdr">
   <div class="hdr-inner">
     <div>
-      <div class="hdr-title">VBC Bailleul</div>
+      <div class="hdr-title">SlyPrep</div>
       <div class="hdr-sub">Entraîneur Volley · Prépa physique &amp; Renforcement</div>
     </div>
-    <div class="hdr-pill">Été 2026 · v5</div>
+    <div class="hdr-pill">Été 2026 · v6</div>
   </div>
 </div>
 
@@ -979,7 +979,7 @@ async function sbInsert(table,data){
   if(TABLES_CLUB.includes(table)&&data&&!data.club)data.club=clubId();
   try{
     const r=await fetch(SB_URL+'/rest/v1/'+table,{method:'POST',headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json','Prefer':'return=minimal'},body:JSON.stringify(data)});
-    if(r.ok){return true;}
+    if(r.ok||r.status===409){return true;}
     queueLocale(table,data);
     return false;
   }catch(e){
@@ -1486,7 +1486,7 @@ function renProgA(){
   const warm=S.stype==='salle'?'🚴 10 min vélo ou corde à sauter + 5 min mobilisation':'🏃 8 min course légère 8 km/h + mobilisation dynamique 3 min';
 
   document.getElementById('s-week-lbl').innerHTML=
-    `Semaine ${w} <span style="font-size:11px;font-weight:700;padding:2px 8px;border-radius:10px;background:${phC};color:#fff;margin-left:4px">${phN}</span>`;
+    `Semaine ${w}<br><span style="display:inline-block;font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px;background:${phC};color:#fff;white-space:nowrap;margin-top:3px">${phN}</span>`;
   document.getElementById('s-info-box').innerHTML=`
     <div style="margin-bottom:6px">
       <div class="prog-row"><span style="font-weight:700;color:var(--txt)">${THEMES[w-1]}</span><span style="font-weight:700;color:${phC}">${inten}%</span></div>
@@ -1569,6 +1569,9 @@ function setFeel(prog,n){
 }
 
 function valider(prog){
+  if(window._validLock){toast('D\u00e9j\u00e0 en cours d\u2019envoi\u2026');return;}
+  window._validLock=true;
+  setTimeout(()=>{window._validLock=false;},5000);
   const w=prog==='A'?S.week:S.cweek;
   const key=`S${w}-${prog==='A'?S.stype:'circuit'}`;
   const feel=prog==='A'?S.feelA:S.feelB;
@@ -1818,7 +1821,7 @@ window.addEventListener('online',()=>{document.getElementById('off-bar').classLi
 // \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550
 loadS();
 viderFileAttente();
-restoreConfig();majLabelsEquipes();appliquerEquipesVisibles();
+restoreConfig();majLabelsEquipes();appliquerEquipesVisibles();setTimeout(loadMesSeances,600);
 if(setupRequis())montrerSetup();
 restoreProfil();
 peuplerSelectNom(S.eq||'f');
@@ -2185,7 +2188,8 @@ function peuplerSelectNom(eq){
   }
 }
 
-function onSelectNom(val){
+function _hookNom(v){setTimeout(loadMesSeances,500);}
+function onSelectNom(val){_hookNom();
   const wrap=document.getElementById('p-nom-custom-wrap');
   if(val==='__autre__'){
     if(wrap)wrap.style.display='block';
@@ -2445,7 +2449,7 @@ function exportPDF(){
   // Ajouter titre et date avant impression
   const titre=document.createElement('div');
   titre.id='print-header';
-  titre.innerHTML='<h1 class="print-title">VBC Bailleul \u2014 Pr\u00e9paration physique 2026/27</h1>'
+  titre.innerHTML='<h1 class="print-title">'+(S.clubNom||'SlyPrep')+' \u2014 Pr\u00e9paration physique '+(S.clubSaison||'')+'</h1>'
     +'<div class="print-date">Rapport du '+new Date().toLocaleDateString('fr-FR',{weekday:'long',year:'numeric',month:'long',day:'numeric'})+'</div>';
   document.body.insertBefore(titre,document.body.firstChild);
   window.print();
@@ -2456,6 +2460,21 @@ function exportPDF(){
 // ===================================================
 // SYNC JOUEURS SUPABASE
 // ===================================================
+async function loadMesSeances(){
+  if(!S.nom)return;
+  const rows=await sbSelect('vbc_seances','prenom=eq.'+encodeURIComponent('"'+S.nom+'"')+'&order=semaine.asc');
+  if(!rows||!rows.length)return;
+  let ajout=0;
+  rows.forEach(r=>{
+    if(!r.semaine||!r.type_seance)return;
+    const key='S'+r.semaine+'-'+r.type_seance;
+    if(!S.done[key]){
+      S.done[key]={feel:r.feeling||0,date:r.date_seance||'',prog:r.type_seance==='circuit'?'B':'A'};
+      ajout++;
+    }
+  });
+  if(ajout>0){saveS();renAccueil();toast('Historique synchronis\u00e9 \u2713');}
+}
 async function syncJoueursDepuisSupabase(){
   // Charger les joueurs custom (non-preset) depuis Supabase
   const rows = await sbSelect('vbc_players','order=created_at.asc');
@@ -2595,6 +2614,10 @@ function restoreConfig(){
   if(S.clubNom){
     const t=document.querySelector('.hdr-title');
     if(t)t.textContent=S.clubNom;
+    const h2=document.querySelector('.pc-sb-logo h2');
+    if(h2)h2.textContent=S.clubNom;
+    const ft=document.getElementById('pc-foot');
+    if(ft)ft.innerHTML=S.clubNom+'<br>'+(S.clubCoach||'')+'<br>Saison '+(S.clubSaison||'');
   }
   if(S.clubCoach){
     const s=document.querySelector('.hdr-sub');

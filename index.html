@@ -389,7 +389,7 @@ input[type=range]{width:100%;accent-color:var(--pri);margin:5px 0 10px;height:24
       <div class="hdr-title">SlyPrep</div>
       <div class="hdr-sub">Entraîneur Volley · Prépa physique &amp; Renforcement</div>
     </div>
-    <div class="hdr-pill">Été 2026 · v6</div>
+    <div class="hdr-pill">Été 2026 · v7</div>
   </div>
 </div>
 
@@ -901,6 +901,10 @@ input[type=range]{width:100%;accent-color:var(--pri);margin:5px 0 10px;height:24
       <input type="text" id="club-eqf" placeholder="Ex : Féminine N2" style="margin-bottom:8px" oninput="sauverConfig()">
       <span class="label">Équipe masculine — nom &amp; niveau</span>
       <input type="text" id="club-eqm" placeholder="Ex : Masculine N3" style="margin-bottom:8px" oninput="sauverConfig()">
+      <div style="border-top:1px solid var(--bdr);margin-top:14px;padding-top:14px">
+        <button onclick="resetApplication()" style="width:100%;padding:11px;border-radius:9px;border:1.5px solid var(--acc);background:transparent;color:var(--acc);font-size:12px;font-weight:700;cursor:pointer">&#9888; Réinitialiser l'application sur cet appareil</button>
+        <div style="font-size:10px;color:var(--txt3);margin-top:6px;line-height:1.4">Efface la configuration du club et les données locales de cet appareil uniquement. Les données déjà envoyées au serveur (séances, charges, présences...) sont conservées.</div>
+      </div>
       <button class="btn btn-grn" onclick="appliquerConfig()" style="margin-bottom:0">Appliquer la configuration &#10003;</button>
     </div>
     <!-- Actions -->
@@ -2535,6 +2539,16 @@ function sauverConfig(){
   if(eqf)S.eqFNom=eqf.value;
   if(eqm)S.eqMNom=eqm.value;
   saveS();
+}
+function resetApplication(){
+  if(!confirm('R\u00e9initialiser l\u2019application sur cet appareil ?\n\nLa configuration du club, le profil et les donn\u00e9es locales seront effac\u00e9s ici. Les donn\u00e9es d\u00e9j\u00e0 envoy\u00e9es au serveur sont conserv\u00e9es.'))return;
+  if(!confirm('Derni\u00e8re confirmation : tout r\u00e9initialiser ?'))return;
+  try{
+    localStorage.removeItem('prepclub');
+    localStorage.removeItem('sb-queue');
+    localStorage.removeItem('prep-last-coach');
+  }catch(e){}
+  location.reload();
 }
 function eqNom(t){return t==='f'?(S.eqFNom||'Féminine N2'):(S.eqMNom||'Masculine N3');}
 var _sgT=null;

@@ -233,6 +233,11 @@ input[type=range]{width:100%;accent-color:var(--pri);margin:5px 0 10px;height:24
 .prog-switch{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
 .ps-btn{padding:18px 12px;border-radius:var(--r);border:2px solid var(--bdr);background:var(--card);cursor:pointer;text-align:center;transition:all .2s;box-shadow:var(--sh)}
 .ps-btn.on.A{border-color:var(--grn);background:var(--grn-bg);box-shadow:0 4px 16px rgba(26,122,74,.15)}
+.prog-switch{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.ps-icon{font-size:26px;line-height:1.1}
+.ps-title{font-size:14px}
+.ps-btn.on.C{border-color:#2e6da4;background:#e8f0f8}
+.chg-box{margin-top:8px;background:var(--bg);border:1px dashed var(--bdr);border-radius:8px;padding:8px 10px}
 .ps-btn.on.B{border-color:var(--org);background:var(--org-bg);box-shadow:0 4px 16px rgba(212,105,30,.15)}
 .ps-icon{font-size:30px;margin-bottom:8px}
 .ps-title{font-size:13px;font-weight:800;color:var(--txt);letter-spacing:-.2px}
@@ -389,7 +394,7 @@ input[type=range]{width:100%;accent-color:var(--pri);margin:5px 0 10px;height:24
       <div class="hdr-title">SlyPrep</div>
       <div class="hdr-sub">Entraîneur Volley · Prépa physique &amp; Renforcement</div>
     </div>
-    <div class="hdr-pill">Été 2026 · v7</div>
+    <div class="hdr-pill">Été 2026 · v8</div>
   </div>
 </div>
 
@@ -583,19 +588,31 @@ input[type=range]{width:100%;accent-color:var(--pri);margin:5px 0 10px;height:24
 ══════════════════════════════════ -->
 <div id="pg-seance" class="page">
 
-  <!-- Sélecteur programme A / B -->
+  <!-- Sélecteur : 4 types de séance -->
   <div class="prog-switch">
-    <div class="ps-btn on A" id="ps-A" onclick="setProg('A')">
-      <div class="ps-icon">💪</div>
-      <div class="ps-title">Programme A</div>
-      <div class="ps-sub">Salle · Extérieur</div>
+    <div class="ps-btn on A" id="ps-salle" onclick="choisirSeance('salle')">
+      <div class="ps-icon">🏋️</div>
+      <div class="ps-title">Salle</div>
+      <div class="ps-sub">Musculation</div>
       <div class="ps-badge badge-obli">Obligatoire</div>
     </div>
-    <div class="ps-btn B" id="ps-B" onclick="setProg('B')">
+    <div class="ps-btn A" id="ps-ext" onclick="choisirSeance('ext')">
+      <div class="ps-icon">🏃</div>
+      <div class="ps-title">Extérieur</div>
+      <div class="ps-sub">Cardio · Terrain</div>
+      <div class="ps-badge badge-obli">Obligatoire</div>
+    </div>
+    <div class="ps-btn B" id="ps-circuit" onclick="choisirSeance('circuit')">
       <div class="ps-icon">⚡</div>
       <div class="ps-title">Circuit Force</div>
-      <div class="ps-sub">Extra-Time · A/B/C</div>
-      <div class="ps-badge badge-opti">Bonus optionnel</div>
+      <div class="ps-sub">Sans matériel</div>
+      <div class="ps-badge badge-opti">Alt. salle</div>
+    </div>
+    <div class="ps-btn C" id="ps-extra" onclick="choisirSeance('extra')">
+      <div class="ps-icon">🚴</div>
+      <div class="ps-title">Extra Time</div>
+      <div class="ps-sub">Activité libre</div>
+      <div class="ps-badge badge-opti">Bonus</div>
     </div>
   </div>
 
@@ -614,6 +631,15 @@ input[type=range]{width:100%;accent-color:var(--pri);margin:5px 0 10px;height:24
           <button class="btn-sm btn" id="stype-salle" onclick="setType('salle')">Salle</button>
           <button class="btn-sm btn" id="stype-ext" onclick="setType('ext')">Extérieur</button>
         </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
+        <span style="font-size:12px;font-weight:700;color:var(--txt2)">📅 Date :</span>
+        <input type="date" id="s-date" style="flex:1;padding:8px 10px;border:1.5px solid var(--bdr);border-radius:8px;font-size:13px;font-weight:600;background:var(--card)">
+      </div>
+      <div id="s-alt-salle" style="display:none;background:#fff8e6;border-left:3px solid #d4691e;border-radius:8px;padding:9px 11px;margin-bottom:10px">
+        <div style="font-size:12px;font-weight:700;color:#8a4b12;margin-bottom:5px">🏠 Pas d'accès à une salle de muscu ?</div>
+        <div style="font-size:12px;color:var(--txt2);line-height:1.45;margin-bottom:7px">Le <strong>Circuit Force</strong> remplace officiellement cette séance : même travail de force, sans matériel.</div>
+        <button onclick="choisirSeance('circuit')" style="padding:7px 12px;border-radius:7px;border:1.5px solid #d4691e;background:#fff;color:#d4691e;font-size:12px;font-weight:700;cursor:pointer">⚡ Faire le Circuit Force à la place</button>
       </div>
       <div id="s-info-box" style="margin-bottom:10px"></div>
       <div id="s-warm" style="margin-bottom:8px"></div>
@@ -691,6 +717,41 @@ input[type=range]{width:100%;accent-color:var(--pri);margin:5px 0 10px;height:24
       </div>
       <button class="btn btn-org" onclick="valider('B')">Valider le circuit ✓</button>
       <div id="val-B" style="display:none;margin-top:8px"></div>
+    </div>
+  </div>
+
+  <div id="prog-C" style="display:none">
+    <div class="card">
+      <div class="card-title">🚴 Extra Time — activité libre</div>
+      <div class="info-box">Tu as fait du sport en plus du programme ? Note-le ici, ton coach le verra 💪</div>
+      <span class="label">Type d'activité</span>
+      <select id="xt-type" style="margin-bottom:10px">
+        <option value="">-- Choisis --</option>
+        <option value="Beach volley">🏐 Beach volley</option>
+        <option value="Vélo">🚴 Vélo</option>
+        <option value="Course à pied">🏃 Course à pied</option>
+        <option value="Randonnée">🥾 Randonnée</option>
+        <option value="Natation">🏊 Natation</option>
+        <option value="Sport collectif">⚽ Autre sport co</option>
+        <option value="Renfo / Gainage">🧘 Renfo · Gainage</option>
+        <option value="Autre">✨ Autre</option>
+      </select>
+      <span class="label">Précision (optionnel)</span>
+      <input type="text" id="xt-note" placeholder="Ex : 30 km, sortie tranquille..." style="margin-bottom:10px">
+      <span class="label">Durée (minutes)</span>
+      <input type="number" inputmode="numeric" id="xt-duree" placeholder="Ex : 45" style="margin-bottom:10px">
+      <span class="label">Date</span>
+      <input type="date" id="xt-date" style="margin-bottom:12px">
+      <span class="label">Ressenti</span>
+      <div style="display:flex;gap:6px;margin-bottom:12px">
+        <button onclick="setXtFeel(1)" class="xt-f" style="flex:1;padding:8px;border-radius:8px;border:1.5px solid var(--bdr);font-size:18px;cursor:pointer;background:var(--card)">😫</button>
+        <button onclick="setXtFeel(2)" class="xt-f" style="flex:1;padding:8px;border-radius:8px;border:1.5px solid var(--bdr);font-size:18px;cursor:pointer;background:var(--card)">😕</button>
+        <button onclick="setXtFeel(3)" class="xt-f" style="flex:1;padding:8px;border-radius:8px;border:1.5px solid var(--bdr);font-size:18px;cursor:pointer;background:var(--card)">🙂</button>
+        <button onclick="setXtFeel(4)" class="xt-f" style="flex:1;padding:8px;border-radius:8px;border:1.5px solid var(--bdr);font-size:18px;cursor:pointer;background:var(--card)">😃</button>
+        <button onclick="setXtFeel(5)" class="xt-f" style="flex:1;padding:8px;border-radius:8px;border:1.5px solid var(--bdr);font-size:18px;cursor:pointer;background:var(--card)">🔥</button>
+      </div>
+      <button class="btn btn-grn" onclick="validerExtra()" style="margin-bottom:0">Envoyer mon activité ✓</button>
+      <div id="val-C" style="display:none;margin-top:8px"></div>
     </div>
   </div>
 </div>
@@ -1362,6 +1423,7 @@ function saveRM(){
   const ex=document.getElementById('rm-ex').value;
   const rm=Math.round(kg*(36/(37-r)));
   S.rm[ex]=rm;saveS();toast('1RM enregistré : '+rm+' kg \u2713');
+  if(S.nom&&S.eq)sbInsert('vbc_charges',{prenom:S.nom,equipe:S.eq,semaine:0,exercice:'RM-'+ex,charge:rm,prescrit:''});
   document.getElementById('rm-saved').innerHTML=
     Object.keys(S.rm).length?
     `<div class="ok-box" style="margin-bottom:0">${Object.keys(S.rm).map(k=>`<strong>${EXL[k]}</strong> : ${S.rm[k]} kg`).join(' \u00B7 ')}</div>`:'';
@@ -1444,15 +1506,66 @@ function loadHTML(ex){
 // \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550
 // SÉANCE
 // \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550
+function choisirSeance(t){
+  var ids={salle:'ps-salle',ext:'ps-ext',circuit:'ps-circuit',extra:'ps-extra'};
+  Object.keys(ids).forEach(function(k){
+    var el=document.getElementById(ids[k]);
+    if(el)el.classList.toggle('on',k===t);
+  });
+  document.getElementById('prog-A').style.display=(t==='salle'||t==='ext')?'':'none';
+  document.getElementById('prog-B').style.display=(t==='circuit')?'':'none';
+  document.getElementById('prog-C').style.display=(t==='extra')?'':'none';
+  var alt=document.getElementById('s-alt-salle');
+  if(alt)alt.style.display=(t==='salle')?'block':'none';
+  if(t==='salle'||t==='ext'){
+    S.prog='A';S.stype=t;saveS();
+    var sd=document.getElementById('s-date');
+    if(sd&&!sd.value)sd.value=new Date().toISOString().slice(0,10);
+    renProgA();
+    var bA=document.querySelector('#prog-A .btn-grn');
+    if(bA)bA.textContent=(t==='salle'?'\u2713 Valider ma s\u00e9ance SALLE':'\u2713 Valider ma s\u00e9ance EXT\u00c9RIEUR');
+  } else if(t==='circuit'){
+    S.prog='B';saveS();renProgB();
+  } else {
+    S.prog='C';saveS();
+    var xd=document.getElementById('xt-date');
+    if(xd&&!xd.value)xd.value=new Date().toISOString().slice(0,10);
+  }
+}
+var _xtFeel=3;
+function setXtFeel(n){
+  _xtFeel=n;
+  var bs=document.querySelectorAll('.xt-f');
+  for(var i=0;i<bs.length;i++){
+    bs[i].style.background=(i+1===n)?'var(--pri)':'var(--card)';
+    bs[i].style.borderColor=(i+1===n)?'var(--pri)':'var(--bdr)';
+  }
+}
+function validerExtra(){
+  if(!S.nom||!S.eq){toast('Choisis ton nom dans Profil');return;}
+  var typ=document.getElementById('xt-type').value;
+  if(!typ){toast('Choisis une activit\u00e9');return;}
+  var dur=parseInt(document.getElementById('xt-duree').value)||0;
+  var prec=(document.getElementById('xt-note').value||'').trim();
+  var xd=document.getElementById('xt-date');
+  var dte;
+  if(xd&&xd.value){var p=xd.value.split('-');dte=p[2]+'/'+p[1]+'/'+p[0];}
+  else dte=new Date().toLocaleDateString('fr-FR');
+  var w=S.week||1;
+  var note=typ+(dur?' \u00b7 '+dur+' min':'')+(prec?' \u00b7 '+prec:'');
+  sbInsert('vbc_seances',{prenom:S.nom,equipe:S.eq,semaine:w,type_seance:'extra',feeling:_xtFeel,note:note,date_seance:dte});
+  S.done['S'+w+'-extra']={feel:_xtFeel,date:dte,prog:'C'};
+  saveS();renAccueil();
+  var v=document.getElementById('val-C');
+  v.style.display='block';
+  v.innerHTML='<div class="ok-box"><strong>Activit\u00e9 envoy\u00e9e \u2713</strong><br>'+note+' \u2014 le '+dte+'</div>';
+  toast('Extra Time enregistr\u00e9 \u2713');
+  document.getElementById('xt-type').value='';
+  document.getElementById('xt-duree').value='';
+  document.getElementById('xt-note').value='';
+}
 function setProg(p){
-  S.prog=p;saveS();
-  document.getElementById('ps-A').classList.toggle('on',p==='A');
-  document.getElementById('ps-A').classList.toggle('A',p==='A');
-  document.getElementById('ps-B').classList.toggle('on',p==='B');
-  document.getElementById('ps-B').classList.toggle('B',p==='B');
-  document.getElementById('prog-A').style.display=p==='A'?'':'none';
-  document.getElementById('prog-B').style.display=p==='B'?'':'none';
-  if(p==='A')renProgA();else renProgB();
+  choisirSeance(p==='B'?'circuit':(p==='C'?'extra':(S.stype||'salle')));
 }
 
 function setType(t){
@@ -1467,7 +1580,7 @@ function setType(t){
 }
 
 function renSeance(){
-  setProg(S.prog);
+  choisirSeance(S.prog==='B'?'circuit':(S.prog==='C'?'extra':(S.stype||'salle')));
 }
 
 function renProgA(){
@@ -1572,14 +1685,38 @@ function setFeel(prog,n){
   document.getElementById('feels-'+prog).querySelectorAll('.feel').forEach((f,i)=>{f.classList.toggle('on',i+1===n);});
 }
 
+function semaineMaxAutorisee(){
+  let maxW=0;
+  Object.keys(S.done||{}).forEach(k=>{
+    if(k.endsWith('-extra'))return;
+    const m=k.match(/^S(\d+)-/);
+    if(m){const w=parseInt(m[1]);if(w>maxW)maxW=w;}
+  });
+  return Math.min(8,maxW+1);
+}
 function valider(prog){
   if(window._validLock){toast('D\u00e9j\u00e0 en cours d\u2019envoi\u2026');return;}
+  const wDem=prog==='A'?S.week:S.cweek;
+  const wMax=semaineMaxAutorisee();
+  if(wDem>wMax){
+    alert('Tu es actuellement en Semaine '+wMax+'.\n\nTermine tes s\u00e9ances de la Semaine '+wMax+' avant de passer \u00e0 la Semaine '+wDem+' \u2014 le programme est progressif \uD83D\uDCAA');
+    return;
+  }
+  const tDem=prog==='A'?S.stype:'circuit';
+  if(S.done&&S.done['S'+wDem+'-'+tDem]){
+    const lb={salle:'Salle',ext:'Ext\u00e9rieur',circuit:'Circuit'};
+    toast('\u2713 '+(lb[tDem]||tDem)+' d\u00e9j\u00e0 valid\u00e9e en S'+wDem);
+    return;
+  }
   window._validLock=true;
   setTimeout(()=>{window._validLock=false;},5000);
   const w=prog==='A'?S.week:S.cweek;
   const key=`S${w}-${prog==='A'?S.stype:'circuit'}`;
   const feel=prog==='A'?S.feelA:S.feelB;
-  const today=new Date().toLocaleDateString('fr-FR');
+  let today;
+  const _sd=document.getElementById('s-date');
+  if(_sd&&_sd.value){const _p=_sd.value.split('-');today=_p[2]+'/'+_p[1]+'/'+_p[0];}
+  else today=new Date().toLocaleDateString('fr-FR');
   S.done[key]={feel,date:today,prog};
   saveS();renAccueil();
   const fl=FL[feel]||'';
